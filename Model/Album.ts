@@ -1,13 +1,17 @@
+import {Song} from "./Song";
+
 export class Album {
     private _name: string;
     private _id: number;
-    private _madeByUser: string
+    private _madeByUser: string;
+    public albumSongList: Song[] = [];
 
 
-    constructor(name: string, id: number, madeByUser: string) {
+    constructor(name: string, id: number, madeByUser: string, albumSongList: Song[]) {
         this._name = name;
         this._id = id;
         this._madeByUser = madeByUser;
+        this.albumSongList = albumSongList;
     }
 
     get name(): string {
