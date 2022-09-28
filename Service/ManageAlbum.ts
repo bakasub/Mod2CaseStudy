@@ -30,13 +30,4 @@ export class ManageAlbum implements Manage<Album> {
         }
     }
 
-    filterByUser(user: string) {
-        let filteredList = []
-        for (let i = 0; i < this.listAlbum.length; i++) {
-            if (user == this.listAlbum[i].madeByUser){
-                filteredList.push(this.listAlbum[i])
-            }
-        }
-        return filteredList
-    }
 }

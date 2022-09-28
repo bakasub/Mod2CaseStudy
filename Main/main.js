@@ -32,6 +32,12 @@ function loginMenu() {
 }
 function register() {
     var username = input.question("Input username\n");
+    for (var i = 0; i < listUser.listUser.length; i++) {
+        if (username == listUser.listUser[i].username) {
+            console.log("This username already existed");
+            return loginMenu();
+        }
+    }
     var password = input.question("Input password\n");
     var id = (listUser.listUser.length + 1);
     var user = new User_1.User(username, password, id);
@@ -62,40 +68,45 @@ function mainMenu() {
         switch (choice) {
             case '1':
                 manageSongMenu();
+                choice = 0;
                 break;
             case '2':
                 manageAllAlbumMenu();
-                break;
-            case '3':
-                console.log(config_1.config.user);
+                choice = 0;
                 break;
             case '9':
                 loginMenu();
+                choice = 0;
                 break;
         }
     } while (choice != 0);
 }
 function manageSongMenu() {
-    var menu = "\tSongs management menu\n1.Display all songs\n2.Add a new song\n3.Back";
+    var menu = "\tSongs management menu\n1.Display all songs\n2.Add a new song\n3.Edit a song's information\n4.Back";
     console.log(menu);
-    var choice;
-    do {
-        choice = input.question();
-        switch (choice) {
-            case '1':
-                console.log(listSong.findAll());
-                manageSongMenu();
-                break;
-            case '2':
-                addNewSong();
-                break;
-            case '3':
-                mainMenu();
-        }
-    } while (choice != 0);
+    var choice = input.question();
+    switch (choice) {
+        case '1':
+            console.log(listSong.findAll());
+            manageSongMenu();
+            break;
+        case '2':
+            addNewSong();
+            break;
+        case '3':
+            editSongInfo();
+            break;
+        case '4':
+            mainMenu();
+            break;
+    }
 }
 function addNewSong() {
     var name = input.question("Input song name\n");
+    if (name == "") {
+        console.log("Name cannot be empty");
+        return manageSongMenu();
+    }
     var id = (listSong.listSong.length + 1);
     var singer = input.question("Input singer name\n");
     var composer = input.question("Input composer name\n");
@@ -103,24 +114,54 @@ function addNewSong() {
     listSong.add(song);
     manageSongMenu();
 }
-function manageAllAlbumMenu() {
-    var menu = "\tAlbum management menu\n    1.Display all album by you\n    2.Create a new album\n    3.Manage an album\n    4.Back\n    ";
-    console.log(menu);
-    var choice = input.question();
-    switch (choice) {
-        case '1':
-            filterUserMadeAlbum();
-            break;
-        case '2':
-            createNewAlbum();
-            break;
-        case '3':
-            manageUserAlbum();
-            break;
-        case '4':
-            mainMenu();
-            break;
+function editSongInfo() {
+    var id = input.question("Input the song's id to edit");
+    var idExist = false;
+    for (var i = 0; i < listSong.listSong.length; i++) {
+        if (id == listSong.listSong[i].id) {
+            idExist = true;
+            var name_1 = input.question("Input the new song's name");
+            var singer = input.question("Input the new singer's name");
+            var composer = input.question("Input the new composer's name");
+            var song = new Song_1.Song(name_1, id, singer, composer);
+            listSong.listSong[i] = song;
+            manageSongMenu();
+        }
     }
+    if (idExist == false) {
+        console.log("This id doesnt exist");
+        manageSongMenu();
+    }
+}
+function manageAllAlbumMenu() {
+    var menu = "\tAlbum management menu\n    1.Display all album by you\n    2.Create a new album\n    3.Manage an album\n    4.Search album(s) by name\n    5.Back\n    ";
+    console.log(menu);
+    var choice;
+    do {
+        choice = input.question();
+        switch (choice) {
+            case '1':
+                filterUserMadeAlbum();
+                choice = 0;
+                break;
+            case '2':
+                createNewAlbum();
+                choice = 0;
+                break;
+            case '3':
+                manageUserAlbum();
+                choice = 0;
+                break;
+            case '4':
+                filterAlbumByName();
+                choice = 0;
+                break;
+            case '5':
+                mainMenu();
+                choice = 0;
+                break;
+        }
+    } while (choice != 0);
 }
 function filterUserMadeAlbum() {
     var filteredList = [];
@@ -134,6 +175,10 @@ function filterUserMadeAlbum() {
 }
 function createNewAlbum() {
     var name = input.question("Input album name\n");
+    if (name == "") {
+        console.log("You cannot leave this field empty");
+        return manageAllAlbumMenu();
+    }
     var id = input.question("Input album id\n");
     for (var i = 0; i < listAlbum.listAlbum.length; i++) {
         if (id == listAlbum.listAlbum[i].id) {
@@ -147,42 +192,90 @@ function createNewAlbum() {
     listAlbum.add(createAlbum);
     manageAllAlbumMenu();
 }
-function manageUserAlbum() {
-    var menu = "\tManage your albums\n    1.Remove an album\n    2.Edit an album's name\n    3.Add a song to your album\n    4.Remove a song from your album\n    5.Edit a song name in your album\n    6.Display an album\n    7.Back";
-    console.log(menu);
-    var choice = input.question();
-    switch (choice) {
-        case '1':
-            removeAnAlbum();
-            break;
-        case '2':
-            editAlbumName();
-            break;
-        case '3':
-            addSongToAlbum();
-            break;
-        case '4':
-            removeSongFromAlbum();
-            break;
-        case '5':
-            editSongNameInAlbum();
-            break;
-        case '6':
-            displaySongsInAlbum();
-            break;
-        case '7':
-            manageAllAlbumMenu();
-            break;
+function filterAlbumByName() {
+    var name = input.question("Input the album name\n");
+    var listOfAlbumName = [];
+    var filteredList = [];
+    for (var i = 0; i < listAlbum.listAlbum.length; i++) {
+        listOfAlbumName.push(listAlbum.listAlbum[i].name);
     }
+    for (var i = 0; i < listOfAlbumName.length; i++) {
+        if (listOfAlbumName[i].includes(name)) {
+            filteredList.push(listAlbum.listAlbum[i]);
+        }
+    }
+    console.log(filteredList);
+    manageAllAlbumMenu();
+}
+function manageUserAlbum() {
+    var menu = "\tManage your albums\n    1.Remove an album\n    2.Edit an album's name\n    3.Add a song to your album\n    4.Remove a song from your album\n    5.Edit a song name in your album\n    6.Display an album\n    7.Find song(s) through name in an album\n    8.Back";
+    console.log(menu);
+    var choice;
+    do {
+        choice = input.question();
+        switch (choice) {
+            case '1':
+                removeAnAlbum();
+                choice = 0;
+                break;
+            case '2':
+                editAlbumName();
+                choice = 0;
+                break;
+            case '3':
+                addSongToAlbum();
+                choice = 0;
+                break;
+            case '4':
+                removeSongFromAlbum();
+                choice = 0;
+                break;
+            case '5':
+                editSongNameInAlbum();
+                choice = 0;
+                break;
+            case '6':
+                displaySongsInAlbum();
+                choice = 0;
+                break;
+            case '7':
+                filterSongByNameInAlbum();
+                choice = 0;
+                break;
+            case '8':
+                manageAllAlbumMenu();
+                choice = 0;
+                break;
+        }
+    } while (choice != 0);
 }
 function removeAnAlbum() {
     var id = input.question("Input the album's id to remove\n");
-    listAlbum.remove(id);
-    manageUserAlbum();
+    console.log("Do you really want to remove this album\n1.Yes\n2.No");
+    var choice = input.question();
+    switch (choice) {
+        case '1':
+            listAlbum.remove(id);
+            manageUserAlbum();
+            break;
+        case '2':
+            manageUserAlbum();
+            break;
+    }
 }
 function editAlbumName() {
     var id = input.question("Input the album's id to edit\n");
     var name = input.question("Input the new name");
+    for (var i = 0; i < listAlbum.listAlbum.length; i++) {
+        if (name == listAlbum.listAlbum[i].name) {
+            console.log("This name already existed");
+            return manageUserAlbum();
+        }
+        if (id == listAlbum.listAlbum[i].id) {
+            console.log("This id already existed");
+            return manageUserAlbum();
+        }
+    }
     listAlbum.listAlbum[listAlbum.findById(id)].name = name;
     manageUserAlbum();
 }
@@ -194,35 +287,57 @@ function addSongToAlbum() {
     manageUserAlbum();
 }
 function removeSongFromAlbum() {
-    var songOrder = input.question("Input the song's order in the album\n");
-    if (isNaN(songOrder)) {
-        var idAlbum = input.question("Input the album's id\n");
-        listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList.splice((songOrder - 1), 1);
-        manageUserAlbum();
-    }
-    else {
-        console.log("Invalid input");
-        manageUserAlbum();
+    var idAlbum = input.question("Input the album's id\n");
+    var songOrder = +input.question("Input the song's order in the album\n");
+    var song = listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList[(songOrder - 1)];
+    console.log("Do you really want to remove the song ".concat(song.name, "\n1.Yes\n2.No"));
+    var choice = input.question();
+    switch (choice) {
+        case '1':
+            listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList.splice((songOrder - 1), 1);
+            manageUserAlbum();
+            break;
+        case '2':
+            manageUserAlbum();
+            break;
     }
 }
 function editSongNameInAlbum() {
-    var idAlbum = input.question("Input the album id\n");
-    var songOrder = input.question("Input the song's order in album to be edited\n");
-    if (isNaN(idAlbum) || isNaN(songOrder)) {
-        console.log("Invalid input");
-        manageUserAlbum();
+    var idAlbum = +input.question("Input the album id\n");
+    var songOrder = +input.question("Input the song's order in album to be edited\n");
+    var name = input.question("Input the new name\n");
+    var album = listAlbum.listAlbum[listAlbum.findById(idAlbum)];
+    for (var i = 0; i < album.albumSongList.length; i++) {
+        if (name == album.albumSongList[i].name) {
+            console.log("This name already existed");
+            return manageUserAlbum();
+        }
     }
-    else {
-        var name_1 = input.question("Input the new name\n");
-        var song = listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList[(songOrder - 1)];
-        song.name = name_1;
-        manageUserAlbum();
-    }
+    var song = listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList[(songOrder - 1)];
+    song.name = name;
+    manageUserAlbum();
 }
 function displaySongsInAlbum() {
     var idAlbum = input.question("Input album's id\n");
     var album = listAlbum.listAlbum[listAlbum.findById(idAlbum)];
     console.log(album);
+    manageUserAlbum();
+}
+function filterSongByNameInAlbum() {
+    var filteredSongNames = [];
+    var filteredList = [];
+    var idAlbum = input.question("Input album id\n");
+    var nameInput = input.question("Input searching keyword\n");
+    var album = listAlbum.listAlbum[listAlbum.findById(idAlbum)];
+    for (var i = 0; i < album.albumSongList.length; i++) {
+        filteredSongNames.push(album.albumSongList[i].name);
+    }
+    for (var i = 0; i < filteredSongNames.length; i++) {
+        if (filteredSongNames[i].includes(nameInput)) {
+            filteredList.push(album.albumSongList[i]);
+        }
+    }
+    console.log(filteredList);
     manageUserAlbum();
 }
 loginMenu();
