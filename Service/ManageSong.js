@@ -25,6 +25,7 @@ var ManageSong = /** @class */ (function () {
                 return i;
             }
         }
+        return -1;
     };
     return ManageSong;
 }());

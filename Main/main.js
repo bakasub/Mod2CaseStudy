@@ -84,22 +84,37 @@ function mainMenu() {
 function manageSongMenu() {
     var menu = "\tSongs management menu\n1.Display all songs\n2.Add a new song\n3.Edit a song's information\n4.Back";
     console.log(menu);
-    var choice = input.question();
-    switch (choice) {
-        case '1':
-            console.log(listSong.findAll());
-            manageSongMenu();
-            break;
-        case '2':
-            addNewSong();
-            break;
-        case '3':
-            editSongInfo();
-            break;
-        case '4':
-            mainMenu();
-            break;
+    var choice;
+    do {
+        choice = input.question();
+        switch (choice) {
+            case '1':
+                displayAllSong();
+                choice = 0;
+                break;
+            case '2':
+                addNewSong();
+                choice = 0;
+                break;
+            case '3':
+                editSongInfo();
+                choice = 0;
+                break;
+            case '4':
+                mainMenu();
+                choice = 0;
+                break;
+        }
+    } while (choice != 0);
+}
+function displayAllSong() {
+    if (listSong.listSong.length == 0) {
+        console.log("The song library is empty");
     }
+    else {
+        console.log(listSong.findAll());
+    }
+    manageSongMenu();
 }
 function addNewSong() {
     var name = input.question("Input song name\n");
@@ -170,7 +185,12 @@ function filterUserMadeAlbum() {
             filteredList.push(listAlbum.listAlbum[i]);
         }
     }
-    console.log(filteredList);
+    if (filteredList.length == 0) {
+        console.log("You did not make any album yet");
+    }
+    else {
+        console.log(filteredList);
+    }
     manageAllAlbumMenu();
 }
 function createNewAlbum() {
@@ -251,6 +271,10 @@ function manageUserAlbum() {
 }
 function removeAnAlbum() {
     var id = input.question("Input the album's id to remove\n");
+    if (listAlbum.availabilityCheck(id) == false) {
+        console.log("This album doesnt exist");
+        manageUserAlbum();
+    }
     console.log("Do you really want to remove this album\n1.Yes\n2.No");
     var choice = input.question();
     switch (choice) {
@@ -265,14 +289,14 @@ function removeAnAlbum() {
 }
 function editAlbumName() {
     var id = input.question("Input the album's id to edit\n");
+    if (listAlbum.availabilityCheck(id) == false) {
+        console.log("This album doesnt exist");
+        manageUserAlbum();
+    }
     var name = input.question("Input the new name");
     for (var i = 0; i < listAlbum.listAlbum.length; i++) {
         if (name == listAlbum.listAlbum[i].name) {
             console.log("This name already existed");
-            return manageUserAlbum();
-        }
-        if (id == listAlbum.listAlbum[i].id) {
-            console.log("This id already existed");
             return manageUserAlbum();
         }
     }
@@ -281,20 +305,39 @@ function editAlbumName() {
 }
 function addSongToAlbum() {
     var idSong = input.question("Input the song's id\n");
-    var idAlbum = input.question("Input the album's id\n");
+    if (idSong > listSong.listSong.length || idSong < 1) {
+        console.log("This id is invalid");
+        manageUserAlbum();
+    }
+    var idAlbum = +input.question("Input the album's id\n");
+    if (listAlbum.availabilityCheck(idAlbum) == false) {
+        console.log("This album doesnt exist");
+        manageUserAlbum();
+    }
+    var songList = listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList;
+    for (var i = 0; i < songList.length; i++) {
+        if (idSong == songList[i].id) {
+            console.log("This song is already in the album");
+            manageUserAlbum();
+        }
+    }
     var song = listSong.listSong[listSong.findById(idSong)];
-    listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList.push(song);
+    songList.push(song);
     manageUserAlbum();
 }
 function removeSongFromAlbum() {
-    var idAlbum = input.question("Input the album's id\n");
-    var songOrder = +input.question("Input the song's order in the album\n");
-    var song = listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList[(songOrder - 1)];
+    var idAlbum = +input.question("Input the album's id\n");
+    if (listAlbum.availabilityCheck(idAlbum) == false) {
+        console.log("This album doesnt exist");
+        manageUserAlbum();
+    }
+    var songIndex = +input.question("Input the song's order in the album\n");
+    var song = listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList[(songIndex - 1)];
     console.log("Do you really want to remove the song ".concat(song.name, "\n1.Yes\n2.No"));
     var choice = input.question();
     switch (choice) {
         case '1':
-            listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList.splice((songOrder - 1), 1);
+            listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList.splice((songIndex - 1), 1);
             manageUserAlbum();
             break;
         case '2':
@@ -319,6 +362,10 @@ function editSongNameInAlbum() {
 }
 function displaySongsInAlbum() {
     var idAlbum = input.question("Input album's id\n");
+    if (listAlbum.availabilityCheck(idAlbum) == false) {
+        console.log("This album doesnt exist");
+        manageUserAlbum();
+    }
     var album = listAlbum.listAlbum[listAlbum.findById(idAlbum)];
     console.log(album);
     manageUserAlbum();

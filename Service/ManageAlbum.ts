@@ -30,4 +30,14 @@ export class ManageAlbum implements Manage<Album> {
         }
     }
 
+    availabilityCheck(id: number) {
+        let avail = false
+        for (let i = 0; i < this.listAlbum.length; i++) {
+            if (id == this.listAlbum[i].id){
+                avail = true
+            }
+        }
+        return avail
+    }
+
 }

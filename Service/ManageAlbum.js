@@ -26,14 +26,14 @@ var ManageAlbum = /** @class */ (function () {
             }
         }
     };
-    ManageAlbum.prototype.filterByUser = function (user) {
-        var filteredList = [];
+    ManageAlbum.prototype.availabilityCheck = function (id) {
+        var avail = false;
         for (var i = 0; i < this.listAlbum.length; i++) {
-            if (user == this.listAlbum[i].madeByUser) {
-                filteredList.push(this.listAlbum[i]);
+            if (id == this.listAlbum[i].id) {
+                avail = true;
             }
         }
-        return filteredList;
+        return avail;
     };
     return ManageAlbum;
 }());
