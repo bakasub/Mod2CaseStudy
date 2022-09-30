@@ -69,7 +69,7 @@ function mainMenu() {
     let menu = `Welcome to the main menu for music
     1.Manage songs
     2.Manage albums
-    9.Log out`
+    3.Log out`
     console.log(menu);
     let choice;
     do {
@@ -83,7 +83,7 @@ function mainMenu() {
                 manageAllAlbumMenu();
                 choice = 0;
                 break;
-            case '9':
+            case '3':
                 loginMenu();
                 choice = 0;
                 break;

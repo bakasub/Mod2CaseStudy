@@ -220,7 +220,7 @@ function filterAlbumByName() {
         listOfAlbumName.push(listAlbum.listAlbum[i].name);
     }
     for (var i = 0; i < listOfAlbumName.length; i++) {
-        if (listOfAlbumName[i].includes(name)) {
+        if (listOfAlbumName[i].includes(name) && listAlbum.listAlbum[i].madeByUser == config_1.config.user.username) {
             filteredList.push(listAlbum.listAlbum[i]);
         }
     }
