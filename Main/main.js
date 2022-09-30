@@ -224,6 +224,10 @@ function filterAlbumByName() {
             filteredList.push(listAlbum.listAlbum[i]);
         }
     }
+    if (filteredList.length == 0) {
+        console.log("There are no result matches your input");
+        return manageAllAlbumMenu();
+    }
     console.log(filteredList);
     manageAllAlbumMenu();
 }
@@ -347,7 +351,11 @@ function removeSongFromAlbum() {
 }
 function editSongNameInAlbum() {
     var idAlbum = +input.question("Input the album id\n");
-    var songOrder = +input.question("Input the song's order in album to be edited\n");
+    if (listAlbum.availabilityCheck(idAlbum) == false) {
+        console.log("This album doesnt exist");
+        manageUserAlbum();
+    }
+    var songIndex = +input.question("Input the song's order in album to be edited\n");
     var name = input.question("Input the new name\n");
     var album = listAlbum.listAlbum[listAlbum.findById(idAlbum)];
     for (var i = 0; i < album.albumSongList.length; i++) {
@@ -356,7 +364,7 @@ function editSongNameInAlbum() {
             return manageUserAlbum();
         }
     }
-    var song = listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList[(songOrder - 1)];
+    var song = listAlbum.listAlbum[listAlbum.findById(idAlbum)].albumSongList[(songIndex - 1)];
     song.name = name;
     manageUserAlbum();
 }
@@ -374,6 +382,10 @@ function filterSongByNameInAlbum() {
     var filteredSongNames = [];
     var filteredList = [];
     var idAlbum = input.question("Input album id\n");
+    if (listAlbum.availabilityCheck(idAlbum) == false) {
+        console.log("This album doesnt exist");
+        manageUserAlbum();
+    }
     var nameInput = input.question("Input searching keyword\n");
     var album = listAlbum.listAlbum[listAlbum.findById(idAlbum)];
     for (var i = 0; i < album.albumSongList.length; i++) {
@@ -383,6 +395,9 @@ function filterSongByNameInAlbum() {
         if (filteredSongNames[i].includes(nameInput)) {
             filteredList.push(album.albumSongList[i]);
         }
+    }
+    if (filteredList.length == 0) {
+        console.log("There are no song matches the input");
     }
     console.log(filteredList);
     manageUserAlbum();

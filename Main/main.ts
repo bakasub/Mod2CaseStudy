@@ -250,7 +250,7 @@ function filterAlbumByName() {
         listOfAlbumName.push(listAlbum.listAlbum[i].name)
     }
     for (let i = 0; i < listOfAlbumName.length; i++) {
-        if (listOfAlbumName[i].includes(name)) {
+        if (listOfAlbumName[i].includes(name) && listAlbum.listAlbum[i].madeByUser == config.user.username) {
             filteredList.push(listAlbum.listAlbum[i])
         }
     }
